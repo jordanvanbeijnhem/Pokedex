@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Pokédex</string>
+    <string name="title_activity_main">Pokédex</string>
+    <string name="nav_header_title">Pokédex</string>
+    <string name="nav_header_subtitle">Jordan van Beijnhem</string>
+    <string name="nav_header_desc">Pokédex</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_favorites">Favorites</string>
+
+    <string name="favorite_add">Added %1$s to favorites</string>
+    <string name="favorite_remove">Removed %1$s from favorites</string>
+</resources>
