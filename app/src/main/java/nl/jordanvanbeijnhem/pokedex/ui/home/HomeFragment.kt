@@ -1,5 +1,6 @@
 package nl.jordanvanbeijnhem.pokedex.ui.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,13 +16,14 @@ import nl.jordanvanbeijnhem.pokedex.R
 import nl.jordanvanbeijnhem.pokedex.adapter.PokemonAdapter
 import nl.jordanvanbeijnhem.pokedex.api.PokedexApi
 import nl.jordanvanbeijnhem.pokedex.model.Pokemon
+import nl.jordanvanbeijnhem.pokedex.ui.info.InfoActivity
 
 
 class HomeFragment : Fragment() {
 
     private lateinit var homeViewModel: HomeViewModel
     private val pokemon = arrayListOf<Pokemon>()
-    private val pokemonAdapter = PokemonAdapter(pokemon)
+    private val pokemonAdapter = PokemonAdapter(pokemon) { pokemon -> onPokemonClick(pokemon) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,6 +57,7 @@ class HomeFragment : Fragment() {
     private fun initViewModel() {
         homeViewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
         homeViewModel.fetchedPokemon.observe(this, Observer {
+            pokemon.clear()
             pokemon.addAll(it)
             pokemonAdapter.notifyDataSetChanged()
         })
@@ -64,5 +67,11 @@ class HomeFragment : Fragment() {
             else progressBar?.visibility = View.GONE
         })
         homeViewModel.fetchNextPage()
+    }
+
+    private fun onPokemonClick(pokemon: Pokemon) {
+        val intent = Intent(activity, InfoActivity::class.java)
+        intent.putExtra("POKEMON", pokemon)
+        startActivity(intent)
     }
 }

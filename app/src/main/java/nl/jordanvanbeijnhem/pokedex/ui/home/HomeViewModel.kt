@@ -2,8 +2,12 @@ package nl.jordanvanbeijnhem.pokedex.ui.home
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import nl.jordanvanbeijnhem.pokedex.api.PokedexApi
 import nl.jordanvanbeijnhem.pokedex.model.Note
 import nl.jordanvanbeijnhem.pokedex.model.Pokemon
@@ -16,7 +20,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val pokemonRepository = PokemonRepository(application.applicationContext)
     private var currentPage = 0
     private var isLastPage = false
-    val fetchedPokemon = MutableLiveData<List<Pokemon>>()
+    val fetchedPokemon: LiveData<List<Pokemon>> = pokemonRepository.getAllPokemon()
     val loading = MutableLiveData(false)
 
     fun fetchNextPage() {
@@ -24,13 +28,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             CoroutineScope(Dispatchers.IO).launch {
                 withContext(Dispatchers.IO) {
                     loading.postValue(true)
-                    val pokemonList = arrayListOf<Pokemon>()
 
                     for (i in currentPage * PokedexApi.PAGE_SIZE + 1..currentPage * PokedexApi.PAGE_SIZE + PokedexApi.PAGE_SIZE) {
                         var pokemon = pokemonRepository.getPokemonById(i.toLong())
-                        if (pokemon != null) {
-                            pokemonList.add(pokemon)
-                        } else {
+                        if (pokemon == null) {
                             val infoCall =
                                 pokedexRepository.getPokemonById(i)
                                     .execute()
@@ -40,7 +41,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                                 pokemon.note = Note("")
                                 pokemon.isFavorite = false
                                 pokemonRepository.insertPokemon(pokemon)
-                                pokemonList.add(pokemon)
                             } else {
                                 isLastPage = true
                                 break
@@ -48,15 +48,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                         }
                     }
 
-                    fetchedPokemon.postValue(pokemonList)
                     loading.postValue(false)
                     currentPage++
                 }
             }
         }
-    }
-
-    fun favoritePokemon() {
-
     }
 }

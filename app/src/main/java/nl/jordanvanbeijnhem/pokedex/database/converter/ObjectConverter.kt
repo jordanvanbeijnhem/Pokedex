@@ -4,7 +4,6 @@ import androidx.room.TypeConverter
 import com.google.gson.Gson
 import nl.jordanvanbeijnhem.pokedex.model.Note
 import nl.jordanvanbeijnhem.pokedex.model.Sprites
-import kotlin.reflect.typeOf
 
 class ObjectConverter {
 

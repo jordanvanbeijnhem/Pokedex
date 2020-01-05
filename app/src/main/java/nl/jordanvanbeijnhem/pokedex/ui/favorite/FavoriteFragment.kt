@@ -1,5 +1,6 @@
 package nl.jordanvanbeijnhem.pokedex.ui.favorite
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,12 +16,13 @@ import kotlinx.android.synthetic.main.fragment_favorite.*
 import nl.jordanvanbeijnhem.pokedex.R
 import nl.jordanvanbeijnhem.pokedex.adapter.PokemonAdapter
 import nl.jordanvanbeijnhem.pokedex.model.Pokemon
+import nl.jordanvanbeijnhem.pokedex.ui.info.InfoActivity
 
 class FavoriteFragment : Fragment() {
 
     private lateinit var favoriteViewModel: FavoriteViewModel
     private val pokemon = arrayListOf<Pokemon>()
-    private val pokemonAdapter = PokemonAdapter(pokemon)
+    private val pokemonAdapter = PokemonAdapter(pokemon) { pokemon -> onPokemonClick(pokemon) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,5 +60,11 @@ class FavoriteFragment : Fragment() {
             if (it) progressBar?.visibility = View.VISIBLE
             else progressBar?.visibility = View.GONE
         })
+    }
+
+    private fun onPokemonClick(pokemon: Pokemon) {
+        val intent = Intent(activity, InfoActivity::class.java)
+        intent.putExtra("POKEMON", pokemon)
+        startActivity(intent)
     }
 }

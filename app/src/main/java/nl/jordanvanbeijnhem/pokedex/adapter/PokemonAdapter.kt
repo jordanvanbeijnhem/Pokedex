@@ -15,7 +15,10 @@ import nl.jordanvanbeijnhem.pokedex.R
 import nl.jordanvanbeijnhem.pokedex.model.Pokemon
 import nl.jordanvanbeijnhem.pokedex.repository.PokemonRepository
 
-class PokemonAdapter(private val pokemon: List<Pokemon>) :
+class PokemonAdapter(
+    private val pokemon: List<Pokemon>,
+    private val onPokemonClick: (Pokemon) -> Unit
+) :
     RecyclerView.Adapter<PokemonAdapter.ViewHolder>() {
 
     private lateinit var context: Context
@@ -34,6 +37,10 @@ class PokemonAdapter(private val pokemon: List<Pokemon>) :
         holder.bind(pokemon[position])
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+        init {
+            itemView.setOnClickListener { onPokemonClick(pokemon[adapterPosition]) }
+        }
 
         fun bind(pokemon: Pokemon) {
             setFavoriteImage(pokemon)
