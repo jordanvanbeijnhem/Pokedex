@@ -10,4 +10,5 @@
 
     <string name="favorite_add">Added %1$s to favorites</string>
     <string name="favorite_remove">Removed %1$s from favorites</string>
+    <string name="no_favorite_message">You don\'t have any favorite pokemon yet</string>
 </resources>

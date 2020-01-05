@@ -54,7 +54,7 @@ class HomeFragment : Fragment() {
 
     private fun initViewModel() {
         homeViewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
-        homeViewModel.pokemon.observe(this, Observer {
+        homeViewModel.fetchedPokemon.observe(this, Observer {
             pokemon.addAll(it)
             pokemonAdapter.notifyDataSetChanged()
         })

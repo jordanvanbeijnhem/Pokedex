@@ -1,13 +1,19 @@
 package nl.jordanvanbeijnhem.pokedex.ui.favorite
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import nl.jordanvanbeijnhem.pokedex.model.Pokemon
+import nl.jordanvanbeijnhem.pokedex.repository.PokemonRepository
 
-class FavoriteViewModel : ViewModel() {
+class FavoriteViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is gallery Fragment"
-    }
-    val text: LiveData<String> = _text
+    private val pokemonRepository = PokemonRepository(application.applicationContext)
+    val favoritePokemon: LiveData<List<Pokemon>> = pokemonRepository.getFavoritePokemon()
+    val loading = MutableLiveData(false)
 }

@@ -1,7 +1,6 @@
 package nl.jordanvanbeijnhem.pokedex.api
 
 import nl.jordanvanbeijnhem.pokedex.model.Pokemon
-import nl.jordanvanbeijnhem.pokedex.model.PokemonInformation
 import nl.jordanvanbeijnhem.pokedex.model.PokemonResponse
 import retrofit2.Call
 import retrofit2.http.GET
@@ -14,5 +13,5 @@ interface PokedexApiService {
     fun getAllPokemon(@Query("offset") paginationOffset: Int): Call<PokemonResponse>
 
     @GET("pokemon/{id}")
-    fun getPokemonInformation(@Path("id") pokemonId: Int): Call<PokemonInformation>
+    fun getPokemonById(@Path("id") pokemonId: Int): Call<Pokemon>
 }

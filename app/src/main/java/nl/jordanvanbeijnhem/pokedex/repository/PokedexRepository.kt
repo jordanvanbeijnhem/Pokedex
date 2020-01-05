@@ -9,5 +9,5 @@ class PokedexRepository {
 
     fun getAllPokemon(paginationOffset: Int) = pokedexApi.getAllPokemon(paginationOffset)
 
-    fun getPokemonInformation(informationUrl: String) = pokedexApi.getPokemonInformation(informationUrl.removePrefix("https://pokeapi.co/api/v2/pokemon/").removeSuffix("/").toInt())
+    fun getPokemonById(id: Int) = pokedexApi.getPokemonById(id)
 }

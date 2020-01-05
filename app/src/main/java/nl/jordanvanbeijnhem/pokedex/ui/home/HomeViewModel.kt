@@ -1,45 +1,62 @@
 package nl.jordanvanbeijnhem.pokedex.ui.home
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.*
 import nl.jordanvanbeijnhem.pokedex.api.PokedexApi
+import nl.jordanvanbeijnhem.pokedex.model.Note
 import nl.jordanvanbeijnhem.pokedex.model.Pokemon
 import nl.jordanvanbeijnhem.pokedex.repository.PokedexRepository
+import nl.jordanvanbeijnhem.pokedex.repository.PokemonRepository
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     private val pokedexRepository = PokedexRepository()
+    private val pokemonRepository = PokemonRepository(application.applicationContext)
     private var currentPage = 0
     private var isLastPage = false
-    val pokemon = MutableLiveData<List<Pokemon>>()
+    val fetchedPokemon = MutableLiveData<List<Pokemon>>()
     val loading = MutableLiveData(false)
 
     fun fetchNextPage() {
         if (!isLastPage) {
-            GlobalScope.launch {
+            CoroutineScope(Dispatchers.IO).launch {
                 withContext(Dispatchers.IO) {
                     loading.postValue(true)
-                    val pokemonCall =
-                        pokedexRepository.getAllPokemon(currentPage * PokedexApi.PAGE_SIZE)
-                            .execute()
-                    if (pokemonCall.isSuccessful && pokemonCall.body() != null) {
-                        val pokemonList = pokemonCall.body()!!.pokemon
-                        for (pokemon in pokemonList) {
+                    val pokemonList = arrayListOf<Pokemon>()
+
+                    for (i in currentPage * PokedexApi.PAGE_SIZE + 1..currentPage * PokedexApi.PAGE_SIZE + PokedexApi.PAGE_SIZE) {
+                        var pokemon = pokemonRepository.getPokemonById(i.toLong())
+                        if (pokemon != null) {
+                            pokemonList.add(pokemon)
+                        } else {
                             val infoCall =
-                                pokedexRepository.getPokemonInformation(pokemon.informationUrl)
+                                pokedexRepository.getPokemonById(i)
                                     .execute()
                             if (infoCall.isSuccessful && infoCall.body() != null) {
-                                pokemon.info = infoCall.body()!!
+                                pokemon = infoCall.body()!!
+                                pokemon.id = i.toLong()
+                                pokemon.note = Note("")
+                                pokemon.isFavorite = false
+                                pokemonRepository.insertPokemon(pokemon)
+                                pokemonList.add(pokemon)
+                            } else {
+                                isLastPage = true
+                                break
                             }
                         }
-                        pokemon.postValue(pokemonList)
-                        loading.postValue(false)
-                        currentPage++
-                        if (pokemonCall.body()!!.next == null) isLastPage = true
                     }
+
+                    fetchedPokemon.postValue(pokemonList)
+                    loading.postValue(false)
+                    currentPage++
                 }
             }
         }
+    }
+
+    fun favoritePokemon() {
+
     }
 }
